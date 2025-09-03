@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Danger X - Investment Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff3366;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .logo i {
+            font-size: 50px;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        #main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--card-border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+
+        .card-header i {
+            font-size: 22px;
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .fund-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .fund-btn {
+            flex: 1;
+            min-width: 110px;
+            padding: 15px 10px;
+            border: none;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .fund-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .fund-btn.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+        }
+
+        .commission {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 6px;
+            display: block;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .selected-fund {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .balance-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+        }
+
+        .balance-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+            margin: 8px 0;
+        }
+
+        .balance-subtext {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(to right, var(--accent), #ff4d7c);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            box-shadow: 0 6px 15px rgba(255, 51, 102, 0.5);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.7);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .bank-form {
+            margin-top: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            font-size: 16px;
+            color: var(--accent);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .warning {
+            background: rgba(220, 53, 69, 0.25);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .warning i {
+            color: var(--danger);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .deposit-warning {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid var(--warning);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 15px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(135deg, #16162c 0%, #1a1a2e 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: translateY(40px);
+            transition: transform 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .wallet-address {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .copy-btn {
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary);
+        }
+
+        .instruction {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .loading-animation {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .verification-message {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            max-width: 90%;
+        }
+
+        .toast.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .fund-buttons {
+                flex-direction: column;
+            }
+            
+            .balance-amount {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                padding: 18px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .btn {
+                padding: 16px;
+                font-size: 1rem;
+            }
+        }
+
+        .deposit-note {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .add-bank-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-bank-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .add-bank-btn i {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .add-bank-btn p {
+            font-weight: 500;
+            margin-top: 6px;
+            font-size: 0.9rem;
+        }
+
+        .tier-system {
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .tier-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tier-item:last-child {
+            border-bottom: none;
+        }
+
+        .tier-range {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .tier-amount {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .info-text {
+            text-align: center;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .upipay-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* New styles for added features */
+        .popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .popup-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-content {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-content h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .popup-content p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 1.1rem;
+        }
+
+        .popup-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .processing-ui {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .processing-status {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .processing-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .processing-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .paid-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .safety-warning {
+            background: rgba(220, 53, 69, 0.25);
+            border: 1px solid var(--danger);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .safety-warning i {
+            color: var(--danger);
+            margin-right: 8px;
+        }
+
+        .min-deposit-note {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 193, 7, 0.15);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .usdt-heading {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .info-icon {
+            background: var(--primary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .info-icon:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .save-button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(38, 119, 252, 0.5);
+        }
+
+        .loading-text {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+
+        .verification-process {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .countdown {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 15px 0;
+            color: var(--accent);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .continuous-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .continuous-loader .spinner {
+            width: 40px;
+            height: 40px;
+            border-width: 3px;
+        }
+        
+        .security-info {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .commission-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .fund-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="logo">
+            <i class="fas fa-bolt"></i>
+        </div>
+        <h1>Danger X</h1>
+        <p class="subtitle">High returns, smart investments</p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="container">
+        <h1>Danger X</h1>
+        <p class="subtitle">Select your investment fund</p>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-line" style="background: rgba(255, 51, 102, 0.2);"></i>
+                <h2>Investment Funds</h2>
+            </div>
+            <div class="fund-buttons">
+                <button class="fund-btn active" data-fund="gaming">
+                    <div class="fund-icon"><i class="fas fa-gamepad"></i></div>
+                    Gaming Fund
+                    <span class="commission-badge">3-5% commission</span>
+                </button>
+                <button class="fund-btn" data-fund="stock">
+                    <div class="fund-icon"><i class="fas fa-chart-bar"></i></div>
+                    Stock Fund
+                    <span class="commission-badge">5-7% commission</span>
+                </button>
+                <button class="fund-btn" data-fund="mix">
+                    <div class="fund-icon"><i class="fas fa-blender-phone"></i></div>
+                    Mixed Fund
+                    <span class="commission-badge">8-10% commission</span>
+                </button>
+            </div>
+
+            <div class="selected-fund">
+                <i class="fas fa-check-circle"></i> Selected: <span id="selected-fund-name">Gaming Fund</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-wallet" style="background: rgba(40, 167, 69, 0.2);"></i>
+                <h2>USDT Balance</h2>
+            </div>
+            <div class="balance-container">
+                <div class="balance-label">
+                    <i class="fas fa-dollar-sign"></i> Available Balance
+                </div>
+                <div class="balance-amount">0.00</div>
+                <div class="balance-subtext">USDT</div>
+            </div>
+
+            <div class="tier-system">
+                <h3 style="text-align: center; margin-bottom: 12px; font-size: 1.1rem;">Investment Tiers</h3>
+                <div class="tier-item">
+                    <span class="tier-range">₹1,00,000 – ₹5,00,000</span>
+                    <span class="tier-amount">1000 USDT</span>
+                </div>
+                <div class="tier-item">
+                    <span class="tier-range">₹5,00,000 – ₹10,00,000</span>
+                    <span class="tier-amount">5000 USDT</span>
+                </div>
+                <div class="tier-item">
+                    <span class="tier-range">₹10,00,000 – ₹20,00,000</span>
+                    <span class="tier-amount">10000 USDT</span>
+                </div>
+                <div class="tier-item">
+                    <span class="tier-range">₹20,00,000+</span>
+                    <span class="tier-amount">15000 USDT</span>
+                </div>
+            </div>
+
+            <div class="deposit-warning">
+                <i class="fas fa-exclamation-circle"></i> You must make a deposit first to start investing
+            </div>
+
+            <button id="load-btn" class="btn">
+                <i class="fas fa-coins"></i> Deposit Funds
+            </button>
+            
+            <div class="deposit-note">
+                Minimum deposit: 1000 USDT
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-university" style="background: rgba(255, 193, 7, 0.2);"></i>
+                <h2>Bank Account Details</h2>
+            </div>
+            
+            <div class="add-bank-btn" id="add-bank-btn">
+                <i class="fas fa-plus-circle"></i>
+                <h3>Add Bank Account</h3>
+                <p>Tap to add your bank account details</p>
+            </div>
+            
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>After receiving money in your bank account, withdraw within 30 minutes. The company is not responsible for any issues with delayed withdrawal.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="usdt-heading">
+                USDT – TRC20
+                <div class="info-icon" id="security-info-btn">i</div>
+            </div>
+            <h2><i class="fas fa-money-bill-wave"></i> Deposit Funds</h2>
+            
+            <div class="security-info">
+                <i class="fas fa-shield-alt"></i> This security deposit ensures safe banking transactions and protects against fraudulent activities.
+            </div>
+            
+            <p class="instruction">Send USDT to the following TRC-20 wallet address:</p>
+            
+            <div class="wallet-address">
+                <span id="wallet-address">TGtKsmisnfyafwohM8PmUC46kdsxcewGX6</span>
+                <button class="copy-btn" id="copy-btn">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            
+            <div class="min-deposit-note">
+                <i class="fas fa-info-circle"></i> Minimum deposit: <strong>1000 USDT</strong>. Transactions below the minimum will not be processed.
+            </div>
+            
+            <div class="processing-buttons">
+                <button class="processing-btn paid-btn" id="paid-btn">
+                    <i class="fas fa-check-circle"></i> I've Made the Payment
+                </button>
+                <button class="processing-btn cancel-btn" id="cancel-payment">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Deposit Info Modal -->
+    <div id="security-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <h2><i class="fas fa-shield-alt"></i> Security Deposit</h2>
+            
+            <div class="instruction">
+                <p>This security deposit serves two important purposes:</p>
+            </div>
+            
+            <div class="security-info">
+                <p>1. <strong>Safe Transactions:</strong> Ensures all bank transactions are completed securely</p>
+                <p>2. <strong>Fraud Prevention:</strong> Protects against any attempts to tamper with banking processes</p>
+            </div>
+            
+            <div class="warning">
+                <i class="fas fa-exclamation-circle"></i> If any fraudulent activity is detected, we reserve the right to retain your deposit.
+            </div>
+            
+            <div class="processing-buttons">
+                <button class="btn understood-btn" id="understand-btn">
+                    <i class="fas fa-check"></i> I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Details Modal -->
+    <div id="bank-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <h2><i class="fas fa-university"></i> Bank Account Details</h2>
+            
+            <div class="bank-form">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Account Holder Name</label>
+                    <input type="text" placeholder="Enter full name as per bank account">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-building"></i> Bank Name</label>
+                    <input type="text" placeholder="Enter your bank name">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-code"></i> IFSC Code</label>
+                    <input type="text" placeholder="Enter IFSC code">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-credit-card"></i> Bank Account Number</label>
+                    <input type="number" placeholder="Enter account number">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> UPI ID</label>
+                    <input type="text" placeholder="Enter UPI ID">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-mobile-alt"></i> UPI Number</label>
+                    <input type="number" placeholder="Enter registered mobile number">
+                </div>
+            </div>
+            
+            <button class="save-button" id="save-bank-btn">
+                <i class="fas fa-save"></i> Save Bank Details
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Proof Modal -->
+    <div id="payment-proof-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <h2><i class="fas fa-receipt"></i> Payment Verification</h2>
+            
+            <div class="instruction">
+                Please provide proof of your payment for verification
+            </div>
+            
+            <div class="bank-form">
+                <div class="form-group">
+                    <label><i class="fas fa-wallet"></i> Your Wallet Address</label>
+                    <input type="text" placeholder="Enter your wallet address">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Payment Screenshot</label>
+                    <input type="file" accept="image/*" style="padding: 10px;">
+                </div>
+            </div>
+            
+            <button class="btn" id="submit-proof">
+                <i class="fas fa-check-circle"></i> Submit Proof
+            </button>
+            
+            <div class="verification-process" id="verification-process" style="display: none;">
+                <div class="continuous-loader">
+                    <div class="spinner"></div>
+                </div>
+                <h3>Verification in Progress</h3>
+                <p>Please wait while we verify your payment. This may take 5-10 minutes.</p>
+                <div class="progress-bar">
+                    <div class="progress" id="verification-progress"></div>
+                </div>
+                <div class="countdown" id="countdown">Estimated time: 5-10 minutes</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fund Information Popups -->
+    <div id="gaming-popup" class="popup-modal">
+        <div class="popup-content">
+            <h3><i class="fas fa-gamepad"></i> Gaming Fund</h3>
+            <p>This fund will run for 30 days with a 3-5% commission rate.</p>
+            <button class="btn understood-btn">
+                <i class="fas fa-check"></i> Understood
+            </button>
+        </div>
+    </div>
+
+    <div id="stock-popup" class="popup-modal">
+        <div class="popup-content">
+            <h3><i class="fas fa-chart-bar"></i> Stock Fund</h3>
+            <p>This fund will run for 15 to 25 days with a 5-7% commission rate.</p>
+            <button class="btn understood-btn">
+                <i class="fas fa-check"></i> Understood
+            </button>
+        </div>
+    </div>
+
+    <div id="mix-popup" class="popup-modal">
+        <div class="popup-content">
+            <h3><i class="fas fa-blender-phone"></i> Mixed Fund</h3>
+            <p>This fund will run for 2 to 7 days with a 8-10% commission rate.</p>
+            <button class="btn understood-btn">
+                <i class="fas fa-check"></i> Understood
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate splash screen
+            setTimeout(function() {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('splash-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    setTimeout(function() {
+                        document.getElementById('main-content').style.opacity = '1';
+                    }, 50);
+                }, 500);
+            }, 2500);
+
+            // Fund selection with popups
+            const fundButtons = document.querySelectorAll('.fund-btn');
+            const selectedFundName = document.getElementById('selected-fund-name');
+            
+            fundButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    fundButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const fundType = this.getAttribute('data-fund');
+                    selectedFundName.textContent = fundType.charAt(0).toUpperCase() + fundType.slice(1) + ' Fund';
+                    
+                    // Show the appropriate popup based on fund type
+                    document.getElementById(`${fundType}-popup`).classList.add('active');
+                });
+            });
+
+            // Modal functionality
+            const paymentModal = document.getElementById('payment-modal');
+            const bankModal = document.getElementById('bank-modal');
+            const paymentProofModal = document.getElementById('payment-proof-modal');
+            const securityModal = document.getElementById('security-modal');
+            const gamingPopup = document.getElementById('gaming-popup');
+            const stockPopup = document.getElementById('stock-popup');
+            const mixPopup = document.getElementById('mix-popup');
+            
+            const loadBtn = document.getElementById('load-btn');
+            const addBankBtn = document.getElementById('add-bank-btn');
+            const securityInfoBtn = document.getElementById('security-info-btn');
+            const understandBtn = document.getElementById('understand-btn');
+            const closeModalButtons = document.querySelectorAll('.close-modal');
+            const understoodButtons = document.querySelectorAll('.understood-btn');
+            const saveBankBtn = document.getElementById('save-bank-btn');
+            const paidBtn = document.getElementById('paid-btn');
+            const cancelPaymentBtn = document.getElementById('cancel-payment');
+            const copyBtn = document.getElementById('copy-btn');
+            const submitProofBtn = document.getElementById('submit-proof');
+            const verificationProcess = document.getElementById('verification-process');
+            const verificationProgress = document.getElementById('verification-progress');
+            const countdown = document.getElementById('countdown');
+            const toast = document.getElementById('toast');
+            const depositBtn = document.getElementById('load-btn');
+            
+            // Track if user has understood the security info
+            let hasUnderstoodSecurity = false;
+            
+            // Open payment modal
+            loadBtn.addEventListener('click', function() {
+                paymentModal.classList.add('active');
+            });
+            
+            // Open security info modal
+            securityInfoBtn.addEventListener('click', function() {
+                securityModal.classList.add('active');
+            });
+            
+            // Understand security info
+            understandBtn.addEventListener('click', function() {
+                securityModal.classList.remove('active');
+                hasUnderstoodSecurity = true;
+                
+                // Change deposit button to withdraw button
+                depositBtn.innerHTML = '<i class="fas fa-money-bill-wave"></i> Withdraw';
+                depositBtn.classList.add('withdraw-btn');
+                
+                showToast('You can now withdraw your security deposit');
+            });
+            
+            // Open bank modal
+            addBankBtn.addEventListener('click', function() {
+                bankModal.classList.add('active');
+            });
+            
+            // Save bank details
+            saveBankBtn.addEventListener('click', function() {
+                bankModal.classList.remove('active');
+                showToast('Bank details saved successfully!');
+            });
+            
+            // I have paid button
+            paidBtn.addEventListener('click', function() {
+                paymentModal.classList.remove('active');
+                paymentProofModal.classList.add('active');
+            });
+            
+            // Submit proof button
+            submitProofBtn.addEventListener('click', function() {
+                submitProofBtn.style.display = 'none';
+                verificationProcess.style.display = 'block';
+                
+                // Simulate verification process
+                let progress = 0;
+                const interval = setInterval(function() {
+                    progress += 0.5;
+                    verificationProgress.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(function() {
+                            paymentProofModal.classList.remove('active');
+                            submitProofBtn.style.display = 'block';
+                            verificationProcess.style.display = 'none';
+                            verificationProgress.style.width = '0%';
+                            showToast('Payment verified successfully!');
+                        }, 1000);
+                    }
+                }, 300);
+            });
+            
+            // Cancel payment
+            cancelPaymentBtn.addEventListener('click', function() {
+                paymentModal.classList.remove('active');
+                showToast('Payment cancelled');
+            });
+            
+            // Copy wallet address
+            copyBtn.addEventListener('click', function() {
+                const walletAddress = document.getElementById('wallet-address').textContent;
+                navigator.clipboard.writeText(walletAddress).then(function() {
+                    showToast('Wallet address copied to clipboard!');
+                });
+            });
+            
+            // Close modals
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    paymentModal.classList.remove('active');
+                    bankModal.classList.remove('active');
+                    paymentProofModal.classList.remove('active');
+                    securityModal.classList.remove('active');
+                    gamingPopup.classList.remove('active');
+                    stockPopup.classList.remove('active');
+                    mixPopup.classList.remove('active');
+                    submitProofBtn.style.display = 'block';
+                    verificationProcess.style.display = 'none';
+                    verificationProgress.style.width = '0%';
+                });
+            });
+            
+            // Close popups with understood buttons
+            understoodButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const popup = this.closest('.popup-modal');
+                    popup.classList.remove('active');
+                });
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === paymentModal) {
+                    paymentModal.classList.remove('active');
+                }
+                if (e.target === bankModal) {
+                    bankModal.classList.remove('active');
+                }
+                if (e.target === paymentProofModal) {
+                    paymentProofModal.classList.remove('active');
+                    submitProofBtn.style.display = 'block';
+                    verificationProcess.style.display = 'none';
+                    verificationProgress.style.width = '0%';
+                }
+                if (e.target === securityModal) {
+                    securityModal.classList.remove('active');
+                }
+                if (e.target === gamingPopup) {
+                    gamingPopup.classList.remove('active');
+                }
+                if (e.target === stockPopup) {
+                    stockPopup.classList.remove('active');
+                }
+                if (e.target === mixPopup) {
+                    mixPopup.classList.remove('active');
+                }
+            });
+            
+            // Toast function
+            function showToast(message) {
+                const toastMessage = document.getElementById('toast-message');
+                toastMessage.textContent = message;
+                toast.classList.add('active');
+                
+                setTimeout(function() {
+                    toast.classList.remove('active');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
